@@ -55,6 +55,10 @@ app.get('/',function(req,res){
   res.send(element);
 });
 
+//routes
+const userRouter = require('./user/user.route')
+app.use("/", userRouter);
+
 //default route
 const defaultRoute = require('./middleware/defaultRoute.mid');
 app.use('/', defaultRoute);
