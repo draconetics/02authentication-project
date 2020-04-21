@@ -11,6 +11,7 @@ app.use(compression());
 
 //midellware
 const morgan = require('morgan');
+//const sourceFile = require('./config/morgan.config')
 app.use(morgan('dev'));
 
 //documentation
@@ -57,7 +58,7 @@ app.get('/',function(req,res){
 
 //routes
 const userRouter = require('./user/user.route')
-app.use("/", userRouter);
+app.use('/', userRouter);
 
 //default route
 const defaultRoute = require('./middleware/defaultRoute.mid');

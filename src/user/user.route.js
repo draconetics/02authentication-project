@@ -5,9 +5,10 @@ const { userService } = require("./dependency");
 
 const userController = new UserController(userService);
 
-router.get("/user", (req, res) => userController.getAllUsers(req, res));
-router.post("/user", (req, res) => userController.register(req, res));
-router.get("/user/:id", (req, res) => userController.getUser(req, res));
+router.get("/users", (req, res) => userController.getAllUsers(req, res));
+router.post("/users", (req, res) => userController.register(req, res));
+router.get("/users/:id", (req, res) => userController.getUser(req, res));
+router.post("/users/login", (req, res) => userController.login(req, res));
 
 
 module.exports = router;

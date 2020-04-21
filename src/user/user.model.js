@@ -33,39 +33,54 @@ const userSchema = mongoose.Schema({
     }]
 })
 
+userSchema.pre('save', async function (next) {
+    // Hash the password before saving the user model
+    const user = this
+    if (user.isModified('password')) {
+        user.password = await bcrypt.hash(user.password, 8)
+    }
+    next()
+})
+
+
 userSchema.methods.generateAuthToken = async function() {
     // Generate an auth token for the user
-    console.log("generate toke method")
+    //console.log("generate toke method")
     const user = this
     console.log(user)
     //const token = jwt.sign({user}, process.env.JWT_KEY)
-    const token = jwt.sign({_id:user._id}, 'secret')
-    console.log(token)
+    const token = await jwt.sign({_id:user._id}, 'secret')
+    
     user.tokens = user.tokens.concat({token})
     await user.save()
-        .then((user) =>{
-            console.log(user)
-            return token
-        })
-        .catch((error) => {
-            throw new Error({ error: 'We could not save.' })    
-        })
+    console.log(token)
+    return token
+        // .then((user) =>{
+        //     console.log(user)
+        //     return token
+        // })
+        // .catch((error) => {
+        //     throw new Error({ error: 'We could not save the token.' })    
+        // })
 }
 
 userSchema.statics.findByCredentials = async (email, password) => {
     // Search for a user by email and password.
+    console.log("find schedules")
     const user = await User.findOne({ email} )
     if (!user) {
-        throw new Error({ error: 'Invalid login credentials' })
+        throw { error: 'Invalid login credentials' }
+        //throw { error: 'Invalid login credentials' }
     }
     console.log("user founded: ")
-    console.log(user);
+    //console.log(user);
     const isPasswordMatch = await bcrypt.compare(password, user.password)
     if (!isPasswordMatch) {
-        throw new Error({ error: 'Invalid login credentials' })
+        console.log("error on the password")
+        throw { error: 'Invalid login credentials' }
     }
-    console.log("password founded: ")
-    console.log(isPasswordMatch);
+    //console.log("password founded: ")
+    //console.log(isPasswordMatch);
     return user
 }
 

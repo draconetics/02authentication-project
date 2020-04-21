@@ -2,14 +2,24 @@ const { ErrorHandler } = require('../exception/ErrorHandler')
 
 const validateUser = function(bodyUser){
     
-    const { name, email, password } = bodyUser
+    const { name } = bodyUser
 
     let errorName = checkName(name)
     if( !isEmpty(errorName))
-      return errorName
+        return errorName
 
+    let errorEmailOrPassword = validateLogin( bodyUser )
+    if( !isEmpty(errorEmailOrPassword))
+        return errorEmailOrPassword
+
+    return {}
+}
+
+const validateLogin = function( bodyUser ){
+    const { email, password } = bodyUser
+    
     let errorEmail = checkEmail(email)
-    if( !isEmpty(errorName))
+    if( !isEmpty(errorEmail))
       return errorEmail
 
     let errorPassword = checkPassword(password)
@@ -73,4 +83,4 @@ const isNotString = function(data) {
     return typeof data !== "string"
 }
 
-module.exports = { validateUser, isEmpty };
+module.exports = { validateUser, isEmpty, validateLogin };
