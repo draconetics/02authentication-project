@@ -1,0 +1,5 @@
+{
+  level: 'error',
+  message: '{"statusCode":500,"status":"SERVER_ERROR","message":"req is not defined","stack":"ReferenceError: req is not defined\\n    at UserService.logout (/mnt/2FE5E29F04B530D2/express-projects/02authentication-project/src/user/user.service.js:55:27)\\n    at UserController.logout (/mnt/2FE5E29F04B530D2/express-projects/02authentication-project/src/user/user.controller.js:71:26)\\n    at /mnt/2FE5E29F04B530D2/express-projects/02authentication-project/src/user/user.route.js:12:64\\n    at Layer.handle [as handle_request] (/mnt/2FE5E29F04B530D2/express-projects/02authentication-project/node_modules/express/lib/router/layer.js:95:5)\\n    at next (/mnt/2FE5E29F04B530D2/express-projects/02authentication-project/node_modules/express/lib/router/route.js:137:13)\\n    at auth (/mnt/2FE5E29F04B530D2/express-projects/02authentication-project/src/middleware/auth.mid.js:31:9)\\n    at processTicksAndRejections (internal/process/task_queues.js:97:5)","level":"error","url":"/users/logout","method":"POST","ip":"::1","transationId":"one","correlationId":"one","request":"{}"}',
+  timestamp: '2020-04-25T02:54:33.682Z'
+}

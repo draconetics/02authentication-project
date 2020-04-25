@@ -1,85 +1,90 @@
-const { validateUser, validateLogin, isEmpty } = require('../util/user.validation') ;
-const { ErrorHandler } = require('../exception/ErrorHandler')
+const { validateUser, validateLogin } = require('../util/user.validation') ;
+const LogHandler = require('../exception/LogHandler')
 
 class UserController {
     constructor(userService) {
       this.userService = userService;
+      this.logger = new LogHandler()
     }
   
-    register(req, res) {
-
-        const errorUser = validateUser( req.body )
-
-        if( !isEmpty(errorUser) )
-            return res.status(422).send(errorUser)
-
-        this.userService.createAndLogin( req.body )
-              .then(data=>{
-                  return res.status(201).json(data);
-              })
-              .catch(e=> {
-                  const error = new ErrorHandler(422, "SERVER_ERROR", e)
-                  return res.status(500).json(error)
-              })
+    async register(req, res) {
+        try{            
+            console.log(req.body)
+            validateUser( req.body )
+            console.log("pasa validacion")
+            const data = await this.userService.createAndLogin( req.body )
+            return res.status(201).json(data);
+        }
+        catch(e){
+            console.log()
+            this.logger.logError(e, req)
+            return res.status(this.logger.statusCode).json(this.logger.getClientError())
+        }
     }
   
     getUser(req, res) {
       const { id } = req.params;
   
+      console.log("this is the id : " + id)
       this.userService.getUser(id)
           .then(data =>{
-              return res.send({results: data})
+                return res.status(200).send(data)
           })
           .catch(e => {
-              const error = new ErrorHandler(500, "SERVER_ERROR", e)
-              return res.status(500).json(error)
+                this.logger.logError(e, req)
+                return res.status(this.logger.statusCode).json(this.logger.getClientError())
           });
       
     }
 
     getAllUsers(req, res) {
+        
         this.userService.getAllUsers()
-        .then(data => {
-            res.status(200).send({results:data});
-        }).catch((e) => {
-            const error = new ErrorHandler(500, "SERVER_ERROR", e)
-            return res.status(500).json(error)
-        })
+            .then(data => {
+                res.status(200).send(data);
+            }).catch((e) => {
+                this.logger.logError(e, req)
+                return res.status(this.logger.statusCode).json(this.logger.getClientError())
+            })
         //console.log(userList)
         
     }
 
-    login(req, res) {
-        const errorUser = validateLogin( req.body )
-
-        if( !isEmpty(errorUser) )
-            return res.status(422).json(errorUser)
-
-        // await this.userService.login( req.body )
-        //     .then(data => {
-        //         console.log("user fouinded")
-        //         res.status(200).json(data);    
-        //     })
-        //     .catch((e) => {
-        //         const error = new ErrorHandler(500, "SERVER_ERROR", e)
-        //         return res.status(500).json(error)
-        //     })
-            
+    async login(req, res) {
         
-        this.userService.login( req.body )
+        
+        try{
+            console.log(req)
+            validateLogin( req.body )
+            const data  = await this.userService.login( req.body )    
+            
+            return res.status(200).json(data);    
+        }catch(e){
+            this.logger.logError(e, req)
+            return res.status(this.logger.statusCode).json(this.logger.getClientError())
+        }           
+            
+    }
+
+    logout(req, res){
+
+        // Log user out of the application
+        this.userService.logout( req.user, req.token )
             .then(data => {
-                console.log("user fouinded")
+                console.log("user logout")
                 return res.status(200).json(data);    
             })
             .catch(e=>{
-                //console.log("controller")
-                //console.log(e.error)
-                const error = new ErrorHandler(500, "SERVER_ERROR", e)
-                return res.status(500).json(error)
-            })
-                            
-            
-                                }
-  }
+                this.logger.logError(e, req)
+                return res.status(this.logger.statusCode).json(this.logger.getClientError())
+            })   
+
+    }
+
+    getUserProfile(req, res) {
+        let msg = {msg:"user logged in", user: req.user, toke: req.token}
+        res.status(200).json(msg)
+    }
+}
   
-  module.exports = UserController;
+module.exports = UserController;

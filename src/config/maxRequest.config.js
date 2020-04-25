@@ -1,4 +1,4 @@
-const { ErrorHandler } = require('../exception/ErrorHandler')
+const ErrorHandler = require('../exception/ErrorHandler')
 
 const maxRequest = {
     windowMs: 15 * 60 * 1000, // 15 minutes

@@ -55,34 +55,28 @@ userSchema.methods.generateAuthToken = async function() {
     await user.save()
     console.log(token)
     return token
-        // .then((user) =>{
-        //     console.log(user)
-        //     return token
-        // })
-        // .catch((error) => {
-        //     throw new Error({ error: 'We could not save the token.' })    
-        // })
+
 }
 
-userSchema.statics.findByCredentials = async (email, password) => {
-    // Search for a user by email and password.
-    console.log("find schedules")
-    const user = await User.findOne({ email} )
-    if (!user) {
-        throw { error: 'Invalid login credentials' }
-        //throw { error: 'Invalid login credentials' }
-    }
-    console.log("user founded: ")
-    //console.log(user);
-    const isPasswordMatch = await bcrypt.compare(password, user.password)
-    if (!isPasswordMatch) {
-        console.log("error on the password")
-        throw { error: 'Invalid login credentials' }
-    }
-    //console.log("password founded: ")
-    //console.log(isPasswordMatch);
-    return user
-}
+// userSchema.statics.findByCredentials = async (email, password) => {
+//     // Search for a user by email and password.
+//     console.log("find schedules")
+//     const user = await User.findOne({ email} )
+//     if (!user) {
+//         throw { error: 'Invalid login credentials' }
+//         //throw { error: 'Invalid login credentials' }
+//     }
+//     console.log("user founded: ")
+//     //console.log(user);
+//     const isPasswordMatch = await bcrypt.compare(password, user.password)
+//     if (!isPasswordMatch) {
+//         console.log("error on the password")
+//         throw { error: 'Invalid login credentials' }
+//     }
+//     //console.log("password founded: ")
+//     //console.log(isPasswordMatch);
+//     return user
+// }
 
 const User = mongoose.model('User', userSchema)
 

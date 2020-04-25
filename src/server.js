@@ -10,9 +10,10 @@ const compression = require('compression')
 app.use(compression());
 
 //midellware
+const winston = require('./config/winston.config.js');
 const morgan = require('morgan');
-//const sourceFile = require('./config/morgan.config')
-app.use(morgan('dev'));
+app.use(morgan('combined', { stream: winston.stream }));
+
 
 //documentation
 // const swaggerUi = require('swagger-ui-express');
@@ -26,9 +27,6 @@ const db = require('./database/db.js');
 app.set('etag', false); // turn off
 //disabling powered by
 app.disable('x-powered-by');
-
-
-
 
 
 //limit the number of users.
@@ -52,6 +50,7 @@ app.use(rateLimit(maxRequest));
 // const emailsRoutes = require('./routes/emails');
 // app.use('/emails', emailsRoutes);
 app.get('/',function(req,res){
+	
   let element = 'hello world';
   res.send(element);
 });
@@ -63,6 +62,23 @@ app.use('/', userRouter);
 //default route
 const defaultRoute = require('./middleware/defaultRoute.mid');
 app.use('/', defaultRoute);
+
+// error handler
+app.use(function(err, req, res, next) {
+    // set locals, only providing error in development
+    console.log("global error handler")
+    res.locals.message = err.message;
+    res.locals.error = req.app.get('env') === 'development' ? err : {};
+
+    // add this line to include winston logging
+    winston.error(`${err.status || 500} - ${err.message} - ${req.originalUrl} - ${req.method} - ${req.ip}`);
+
+    // render the error page
+    const errorObj = {code: err.status, detail:err.message, stack: err.stack}
+    res.status(err.status || 500).json(errorObj);
+    //res.render('error');
+});
+
 
 const portConfig = require('./config/port.config');
 db.connect()

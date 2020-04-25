@@ -1,27 +1,16 @@
 const router = require('express-promise-router')();
-const { ErrorHandler } = require('../exception/ErrorHandler');
 
+const LogHandler = require('../exception/LogHandler')
+const logger = new LogHandler()
 
-//The 404 Route (ALWAYS Keep this as the last route)
-// router.get('*', function(req, res){
-//     const errorHandler = new ErrorHandler(404, 'CLIENT_ERROR', 'Page not found');
-//     return res.status(404).send(errorHandler);
-// });
-
-//POST request
 router.use(function(req,res,next){
-    // if (req.method != "GET"){
-    //     console.log("default route for : " + req.method)
-    //     //return next()
-    //     const errorHandler = new ErrorHandler(404, 'CLIENT_ERROR', 'Page not found');
-    //     return res.status(404).send(errorHandler);
-    // } 
-    
+
     console.log("default route for : " + req.method)
-    //return next()
-    const errorHandler = new ErrorHandler(404, 'CLIENT_ERROR', 'Page not found');
-    return res.status(404).send(errorHandler);    
-     // Do something
-});  //==> ROUTER LEVEL MIDDLE WARE
+    
+    const error = new Error('Page not found')
+    error.code = 404
+    logger.logError(error, req)
+    return res.status(logger.statusCode).send(logger.getClientError());    
+});  
 
 module.exports = router;
